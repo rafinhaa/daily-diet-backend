@@ -5,24 +5,27 @@ COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 
-FROM node:18-alpine AS builder
+FROM deps AS builder
 
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY tsconfig.json tsup.config.ts ./
+COPY src ./src
+COPY knexfile.ts ./knexfile.ts
+COPY migrations ./migrations
 
 RUN yarn build
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --frozen-lockfile --production && yarn cache clean
+
 
 FROM node:18-alpine AS runner
 
 WORKDIR /app
+ENV NODE_ENV=production
+
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
-RUN mv ./dist/knexfile.js ./knexfile.js
-RUN mv -T ./dist/migrations ./migrations
+COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
 
-CMD ["yarn", "prod"]
+CMD ["sh", "-c", "node ./node_modules/.bin/knex migrate:latest && node dist/src/server.js"]
