@@ -2,7 +2,7 @@
   "name": "daily-diet",
   "version": "1.0.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "main": "src/server.ts",
   "repository": "https://github.com/rafinhaa/daily-diet",
@@ -20,17 +20,17 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/node": "^20.1.0",
     "pino-pretty": "^10.0.0",
-    "tsup": "^6.7.0",
-    "tsx": "^3.12.7",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@fastify/cookie": "^8.3.0",
+    "@fastify/cookie": "^11.0.2",
     "@sentry/node": "^7.53.1",
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^8.3.0",
     "dotenv": "^16.0.3",
-    "fastify": "^4.17.0",
+    "fastify": "^5.8.2",
     "knex": "^2.4.2",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.43",
