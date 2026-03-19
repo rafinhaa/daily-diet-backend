@@ -26,4 +26,5 @@ if (!envParser.success) {
   throw new Error(errorMessage);
 }
 
+export type Env = z.infer<typeof envSchema>;
 export const env = envParser.data;
