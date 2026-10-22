@@ -22,9 +22,10 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
+COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "node ./node_modules/.bin/knex migrate:latest && node dist/src/server.js"]
+CMD ["sh", "-c", "node ./node_modules/.bin/knex --knexfile ./dist/knexfile.js migrate:latest && exec node dist/src/server.js"]

@@ -8,8 +8,9 @@ export const config: Knex.Config = {
   },
   useNullAsDefault: true,
   migrations: {
-    extension: "ts",
-    directory: "./migrations",
+    extension: env.NODE_ENV === "production" ? "js" : "ts",
+    directory:
+      env.NODE_ENV === "production" ? "./dist/migrations" : "./migrations",
   },
 };
 
