@@ -1,8 +1,8 @@
-import fastify, { FastifyLoggerOptions, FastifyReply, FastifyRequest } from "fastify";
+import fastify, { FastifyLoggerOptions } from "fastify";
 import cookie, { FastifyCookieOptions } from "@fastify/cookie";
-import { env, type Env } from "./env";
+import { env } from "./env";
 import * as Sentry from "@sentry/node";
-import pino, { Logger as PinoLogger } from 'pino';
+import pino, { Logger as PinoLogger } from "pino";
 
 import { users } from "@/routes/user";
 import { ZodError } from "zod";
@@ -16,25 +16,32 @@ Sentry.init({
 
 type LoggerConfig = boolean | FastifyLoggerOptions | PinoLogger;
 
-const envToLogger: Record<Env["NODE_ENV"], LoggerConfig> = {
-  development: pino({
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        translateTime: 'HH:mm:ss Z',
-        ignore: 'pid,hostname',
+function getLogger(): LoggerConfig {
+  if (env.NODE_ENV === "development") {
+    return pino({
+      transport: {
+        target: "pino-pretty",
+        options: {
+          translateTime: "HH:mm:ss Z",
+          ignore: "pid,hostname",
+        },
       },
-    },
-  }),
-  production: {
-    level: 'info',
+    });
+  }
+
+  if (env.NODE_ENV === "test") {
+    return false;
+  }
+
+  return {
+    level: "info",
     serializers: {
       res: (res) => ({
         statusCode: res.statusCode,
       }),
 
       req: (req) => ({
-        ip: req.headers['x-forwarded-for'] || req.ip,
+        ip: req.headers["x-forwarded-for"] || req.ip,
         method: req.method,
         url: req.url,
         hostname: req.hostname,
@@ -42,12 +49,11 @@ const envToLogger: Record<Env["NODE_ENV"], LoggerConfig> = {
         remotePort: req.socket?.remotePort,
       }),
     },
-  },
-  test: false,
-};
+  };
+}
 
 export const app = fastify({
-  logger: envToLogger[env.NODE_ENV] ?? true,
+  logger: getLogger(),
 });
 
 app.register(cookie, {
