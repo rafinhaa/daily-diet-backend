@@ -13,7 +13,7 @@
     "dev": "tsx watch src/server.ts",
     "knex": "tsx ./node_modules/.bin/knex",
     "build": "tsup --config tsup.config.ts",
-    "preprod": "node ./node_modules/.bin/knex migrate:latest",
+    "preprod": "node ./node_modules/.bin/knex --knexfile ./dist/knexfile.js migrate:latest",
     "prod": "node dist/src/server.js"
   },
   "devDependencies": {
